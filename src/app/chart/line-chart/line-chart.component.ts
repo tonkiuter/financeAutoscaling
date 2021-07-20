@@ -1,4 +1,6 @@
+import { animation } from '@angular/animations';
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import { data } from 'jquery';
 import { SharedService } from '../../shared.service';
 declare var google: any;
 @Component({
@@ -12,21 +14,12 @@ export class LineChartComponent implements OnInit, AfterViewInit {
     list = this.ChartList;
     const data = new google.visualization.DataTable();
 
-/*     const data = google.visualization.arrayToDataTable([
-      ['Year', 'Sales', 'Expenses'],
-      ['2004',  1000,      400],
-      ['2005',  1170,      460],
-      ['2006',  660,       1120],
-      ['2007',  1030,      540]
-    ]); */
-
     let keys = []; //key values
     let values_high = []; //high
     let values_low = [];
     let values_close = [];
     let values_open = [];
     let index = []; //index of values 0 to lenght-1
-    //var date = [];
 
     let fechas:Array<Date> = []; //aqui almacenamos nuestras fechas de epoch a datetime
 
@@ -35,22 +28,20 @@ export class LineChartComponent implements OnInit, AfterViewInit {
       keys.push(k);
     }
 
-    console.log("Muestra algo",keys)
+    //console.log("Muestra algo",keys)
       //en values almacenamos los valores de nuestro json teniendo como key la fecha en epoch unix
       for (var i = 0; i < keys.length; i++) {
         //console.log(list['High'][keys[i]]);
-
         values_high.push(list['High'][keys[i]]);
         values_low.push(list['Low'][keys[i]]);
         values_open.push(list['Open'][keys[i]]);
         values_close.push(list['Close'][keys[i]]);
       }
 
-      //Parte que no funciona!
     //almacenamos nuestras keys en un array que sigue siendo un objecto pero asi ya podemos manipular los datos
       var array:Array<string> = Object.values(keys);
-      console.log("Tipo de mi array: ", typeof (array));
-      console.log("Values:", array);
+      //console.log("Tipo de mi array: ", typeof (array));
+      //console.log("Values:", array);
 
       //Convertimos nuestro array de objectos con las fechas en epoch en enteros
       for (i = 0; i < array.length; i++) {
@@ -60,14 +51,14 @@ export class LineChartComponent implements OnInit, AfterViewInit {
 
         //pasamos las fechas con la funcion date para que los valores en enteros puedan ser Datetime
         var new_date = new Date(intValor);
-        console.log(new_date);
+        //console.log(new_date);
 
         //recoger todas las fechas formateadas a Datetime.
         fechas.push(new_date);
       }
       //end for 
 
-      console.log("Nuevas Fechas: ", fechas);
+      //console.log("Nuevas Fechas: ", fechas);
 
       //Creamos los indices del cero hasta la longitud de los valores
       for (var z = 0; z < values_high.length; z++) {
@@ -94,19 +85,33 @@ export class LineChartComponent implements OnInit, AfterViewInit {
 
       series: {
         0: { color: '#3fcfd4' }
-      }
+      },
+
+      explorer: { 
+        //actions: ['dragToZoom', 'rightClickToReset'],
+        axis: 'horizontal',
+        maxZoomIn: 10,
+        maxZoomOut: 7
+        }
+
+      
     };
 
     const chart = new google.visualization.LineChart(this.lineChart.nativeElement);
     chart.draw(data, options);
+
+
   }
 
   constructor(private service:SharedService) { }
   ngAfterViewInit(): void {
     console.log("ngAfterView");
+
   }
 
   ChartList: any = [];
+
+
 
   ngOnInit(): void {
   this.refreshChartList();
@@ -121,7 +126,10 @@ export class LineChartComponent implements OnInit, AfterViewInit {
       console.log(this.ChartList)
       google.charts.load('current', {packages: ['corechart', 'line']});
       google.charts.setOnLoadCallback(this.drawChart);
+
     });
+
+    
 
     
   }
