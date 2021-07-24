@@ -1,14 +1,15 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { SharedService } from '../../shared.service';
-declare var google: any;
+import { SharedService } from '../../../shared.service';
 
+declare var google: any;
 @Component({
-  selector: 'app-candle-chart',
-  templateUrl: './candle-chart.component.html',
-  styleUrls: ['./candle-chart.component.css']
+  selector: 'app-week-candle-chart',
+  templateUrl: './week-candle-chart.component.html',
+  styleUrls: ['./week-candle-chart.component.css']
 })
-export class CandleChartComponent implements OnInit, AfterViewInit {
-  @ViewChild('candleChart') candleChart!: ElementRef;
+export class WeekCandleChartComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('candleWeekChart') candleWeekChart!: ElementRef
 
   drawChart = (list:any) => {
     list = this.ChartList;
@@ -91,7 +92,7 @@ export class CandleChartComponent implements OnInit, AfterViewInit {
               maxZoomOut: 7
               }
         };
-        const chart = new google.visualization.CandlestickChart(this.candleChart.nativeElement);
+        const chart = new google.visualization.CandlestickChart(this.candleWeekChart.nativeElement);
         chart.draw(data, options);
 
   }
@@ -111,7 +112,7 @@ export class CandleChartComponent implements OnInit, AfterViewInit {
   }
 
   refreshChartList(){
-    this.service.getDepList().subscribe(data=>{
+    this.service.getDepListW().subscribe(data=>{
       this.ChartList = data;
       this.ChartList = JSON.parse(this.ChartList)
       console.log(typeof(this.ChartList))
@@ -122,10 +123,4 @@ export class CandleChartComponent implements OnInit, AfterViewInit {
 
   }
 
-/*     ngAfterViewInit(): void {
-      google.charts.load('current', {packages: ['corechart']});
-      google.charts.setOnLoadCallback(this.drawChart);
-    } */
-
 }
-
